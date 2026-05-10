@@ -13,27 +13,43 @@ Visualize wildfire risk spatially
 Evaluate model performance
 
 3.Dataset
+## Dataset Used
 
-Algerian Forest Fire Dataset
-The dataset includes 244 instances that regroup a data of two regions of Algeria, namely the Bejaia region located in the northeast of Algeria and the Sidi Bel-abbes region located in the northwest of Algeria.
-122 instances for each region.
-The period from June 2012 to September 2012.
-The dataset includes 11 attributes and 1 output attribute (class)
-The 244 instances have been classified into fire (138 classes) and not fire (106 classes) classes.
+This project utilizes the NASA FIRMS (Fire Information for Resource Management System) dataset, which provides near real-time wildfire detection data collected from satellite observations. The dataset contains important wildfire-related parameters that help in analyzing and predicting wildfire risk levels.
 
-4.Features used:
-Temperature
-Wind Speed
-Relative Humidity
-Drought Index
-Vegetation Indices (e.g., NDVI)
-Geographic Coordinates (for mapping)
+### Features Used
 
-5.Target Variable:
-Wildfire Risk Level:
-Low
-Medium
-High
+The following features were used for training the Random Forest model:
+
+- Latitude
+- Longitude
+- Brightness
+- Scan
+- Track
+- Acquisition Date
+- Acquisition Time
+- Satellite
+- Instrument
+- Confidence
+- Version
+- Brightness Temperature (Bright_T31)
+- Fire Radiative Power (FRP)
+- Day/Night Indicator
+
+Additional weather-related parameters were also incorporated for improving prediction accuracy.
+
+### Target Variable
+
+The target variable in this project is:
+
+- **Wildfire Risk Level**
+
+The wildfire risk was classified into categories such as:
+- Low Risk
+- Medium Risk
+- High Risk
+
+
 
 6.Methodology
 1️⃣ Data Preprocessing
