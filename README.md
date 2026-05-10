@@ -1,4 +1,4 @@
-# Project-2-predictive-analytics
+# Wildlife-Risk-CLassification
 Wildlife risk classification from satellite and weather data
 
 1.Project Overview
