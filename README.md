@@ -13,11 +13,10 @@ Visualize wildfire risk spatially
 Evaluate model performance
 
 3.Dataset
-## Dataset Used
 
 This project utilizes the NASA FIRMS (Fire Information for Resource Management System) dataset, which provides near real-time wildfire detection data collected from satellite observations. The dataset contains important wildfire-related parameters that help in analyzing and predicting wildfire risk levels.
 
-### Features Used
+Features Used:
 
 The following features were used for training the Random Forest model:
 
@@ -38,7 +37,7 @@ The following features were used for training the Random Forest model:
 
 Additional weather-related parameters were also incorporated for improving prediction accuracy.
 
-### Target Variable
+Target Variable:
 
 The target variable in this project is:
 
