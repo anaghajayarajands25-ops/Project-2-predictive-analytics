@@ -80,7 +80,6 @@ The models were evaluated using:
 The project successfully classified wildfire risk levels using machine learning techniques and satellite data analysis.
 
 ## Files Included
-- Dataset File
 - Google Colab Notebook
 - README.md
 
