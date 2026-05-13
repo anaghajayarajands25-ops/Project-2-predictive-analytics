@@ -6,7 +6,7 @@
 
 ## 🌐 Live Demo
 
-[![Streamlit App](https://wildlife-risk-classification-hmhgxew5ym8wycpsdoegi8.streamlit.app/)
+https://wildlife-risk-classification-hmhgxew5ym8wycpsdoegi8.streamlit.app/
 
 
 
