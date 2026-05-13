@@ -171,7 +171,7 @@ wildfire-risk-classification/
 - [ ] Integration with live weather APIs (OpenWeatherMap, NOAA)
 - [ ] Improved spatial visualization (Folium / Kepler.gl maps)
 - [ ] Deep learning models (LSTM for temporal fire spread prediction)
-- [x] ~~Streamlit deployment~~ *(in progress — link above)*
+
 
 ---
 
