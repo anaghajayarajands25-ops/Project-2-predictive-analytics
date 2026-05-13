@@ -40,10 +40,28 @@ ENCODER_PATH = os.path.join(
 # =========================================================
 # LOAD MODEL
 # =========================================================
+# =========================================================
+# LOAD MODEL
+# =========================================================
 @st.cache_resource
 def load_model():
-    model = joblib.load(MODEL_PATH)
-    label_encoder = joblib.load(ENCODER_PATH)
+
+    loaded_obj = joblib.load(MODEL_PATH)
+
+    st.write(type(loaded_obj))
+
+    # If saved as dictionary
+    if isinstance(loaded_obj, dict):
+
+        st.write("Keys inside model file:", loaded_obj.keys())
+
+        model = loaded_obj['model']
+        label_encoder = loaded_obj['encoder']
+
+    else:
+        model = loaded_obj
+        label_encoder = joblib.load(ENCODER_PATH)
+
     return model, label_encoder
 
 model, le = load_model()
