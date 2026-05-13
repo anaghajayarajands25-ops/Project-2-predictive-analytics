@@ -4,6 +4,7 @@
 # Streamlit Deployment App
 # =========================================================
 
+import os
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -20,12 +21,29 @@ st.set_page_config(
 )
 
 # =========================================================
+# MODEL PATHS
+# =========================================================
+BASE_DIR = os.path.dirname(__file__)
+
+MODEL_PATH = os.path.join(
+    BASE_DIR,
+    "models",
+    "wildfire_xgboost_pipeline.joblib"
+)
+
+ENCODER_PATH = os.path.join(
+    BASE_DIR,
+    "models",
+    "wildfire_label_encoder.joblib"
+)
+
+# =========================================================
 # LOAD MODEL
 # =========================================================
 @st.cache_resource
 def load_model():
-    model = joblib.load("xgboost_wildfire_model.pkl")
-    label_encoder = joblib.load("xgboost_label_encoder.pkl")
+    model = joblib.load(MODEL_PATH)
+    label_encoder = joblib.load(ENCODER_PATH)
     return model, label_encoder
 
 model, le = load_model()
@@ -34,16 +52,17 @@ model, le = load_model()
 # TITLE
 # =========================================================
 st.title("🔥 Wildfire Risk Classification System")
+
 st.markdown("""
 ### Satellite & Weather Based Wildfire Prediction using XGBoost
 
-This system predicts wildfire risk levels:
+This application predicts wildfire risk levels:
 
 - 🟢 Low Risk
 - 🟠 Medium Risk
 - 🔴 High Risk
 
-using NASA FIRMS satellite observations and environmental parameters.
+using NASA FIRMS satellite wildfire observations and environmental parameters.
 """)
 
 st.divider()
@@ -53,48 +72,64 @@ st.divider()
 # =========================================================
 st.sidebar.header("📌 Input Parameters")
 
-brightness = st.sidebar.slider(
-    "Brightness",
-    250.0, 500.0, 320.0
-)
-
-scan = st.sidebar.slider(
-    "Scan",
-    0.5, 5.0, 1.5
-)
-
-track = st.sidebar.slider(
-    "Track",
-    0.5, 5.0, 1.5
-)
-
-confidence = st.sidebar.slider(
-    "Confidence",
-    0, 100, 75
-)
-
-bright_t31 = st.sidebar.slider(
-    "Bright T31",
-    250.0, 400.0, 300.0
-)
-
-frp = st.sidebar.slider(
-    "Fire Radiative Power (FRP)",
-    0.0, 500.0, 25.0
-)
-
 latitude = st.sidebar.number_input(
     "Latitude",
+    min_value=-90.0,
+    max_value=90.0,
     value=10.0
 )
 
 longitude = st.sidebar.number_input(
     "Longitude",
+    min_value=-180.0,
+    max_value=180.0,
     value=76.0
 )
 
+brightness = st.sidebar.slider(
+    "Brightness",
+    250.0,
+    500.0,
+    320.0
+)
+
+scan = st.sidebar.slider(
+    "Scan",
+    0.5,
+    5.0,
+    1.5
+)
+
+track = st.sidebar.slider(
+    "Track",
+    0.5,
+    5.0,
+    1.5
+)
+
+confidence = st.sidebar.slider(
+    "Confidence",
+    0,
+    100,
+    75
+)
+
+bright_t31 = st.sidebar.slider(
+    "Bright T31",
+    250.0,
+    400.0,
+    300.0
+)
+
+frp = st.sidebar.slider(
+    "Fire Radiative Power (FRP)",
+    0.0,
+    500.0,
+    25.0
+)
+
 daynight = st.sidebar.selectbox(
-    "Day/Night",
+    "Day / Night",
     ["D", "N"]
 )
 
@@ -102,12 +137,6 @@ satellite = st.sidebar.selectbox(
     "Satellite",
     ["A", "T"]
 )
-
-# =========================================================
-# PREPROCESS INPUTS
-# =========================================================
-daynight_encoded = 1 if daynight == "D" else 0
-satellite_encoded = 0 if satellite == "A" else 1
 
 # =========================================================
 # CREATE INPUT DATAFRAME
@@ -118,18 +147,27 @@ input_data = pd.DataFrame({
     'brightness': [brightness],
     'scan': [scan],
     'track': [track],
-    'satellite': [satellite_encoded],
+    'satellite': [satellite],
     'confidence': [confidence],
     'bright_t31': [bright_t31],
     'frp': [frp],
-    'daynight': [daynight_encoded]
+    'daynight': [daynight]
 })
 
 # =========================================================
-# PREDICTION
+# SHOW INPUT DATA
+# =========================================================
+with st.expander("📋 View Input Data"):
+    st.dataframe(input_data)
+
+# =========================================================
+# PREDICTION BUTTON
 # =========================================================
 if st.button("🚀 Predict Wildfire Risk"):
 
+    # =====================================================
+    # MODEL PREDICTION
+    # =====================================================
     prediction = model.predict(input_data)[0]
     prediction_label = le.inverse_transform([prediction])[0]
 
@@ -138,7 +176,7 @@ if st.button("🚀 Predict Wildfire Risk"):
     st.subheader("📊 Prediction Result")
 
     # =====================================================
-    # RISK DISPLAY
+    # RISK LEVEL DISPLAY
     # =====================================================
     if prediction_label.lower() == "low":
         st.success(f"🟢 Predicted Risk Level: {prediction_label.upper()}")
@@ -152,8 +190,10 @@ if st.button("🚀 Predict Wildfire Risk"):
     st.divider()
 
     # =====================================================
-    # PROBABILITY CHART
+    # PROBABILITY VISUALIZATION
     # =====================================================
+    st.subheader("📈 Prediction Probabilities")
+
     prob_df = pd.DataFrame({
         "Risk Level": le.classes_,
         "Probability": probabilities
@@ -165,17 +205,25 @@ if st.button("🚀 Predict Wildfire Risk"):
         y="Probability",
         text="Probability",
         color="Risk Level",
-        title="Prediction Probabilities"
+        title="Risk Probability Distribution"
     )
 
-    fig.update_traces(texttemplate='%{text:.2f}', textposition='outside')
+    fig.update_traces(
+        texttemplate='%{text:.2f}',
+        textposition='outside'
+    )
+
+    fig.update_layout(
+        yaxis_title="Probability",
+        xaxis_title="Risk Level"
+    )
 
     st.plotly_chart(fig, use_container_width=True)
 
     # =====================================================
     # MAP VISUALIZATION
     # =====================================================
-    st.subheader("🌍 Location Visualization")
+    st.subheader("🌍 Geographic Visualization")
 
     map_df = pd.DataFrame({
         'latitude': [latitude],
@@ -188,7 +236,7 @@ if st.button("🚀 Predict Wildfire Risk"):
         lat="latitude",
         lon="longitude",
         color="risk",
-        zoom=4,
+        zoom=3,
         size_max=15,
         mapbox_style="open-street-map",
         title="Predicted Wildfire Location"
@@ -202,29 +250,42 @@ if st.button("🚀 Predict Wildfire Risk"):
 st.divider()
 
 with st.expander("ℹ️ About This Project"):
-    st.markdown("""
-### Wildfire Risk Classification using XGBoost
 
-This project uses:
-- NASA FIRMS satellite wildfire data
-- Machine Learning (XGBoost)
-- Spatial wildfire risk prediction
+    st.markdown("""
+## Wildfire Risk Classification using XGBoost
+
+This project predicts wildfire risk levels using NASA FIRMS satellite wildfire observations and machine learning techniques.
+
+### Dataset
+- NASA FIRMS MODIS Active Fire Dataset
+
+### Machine Learning Models Compared
+- Support Vector Machine (SVM)
+- Random Forest
+- XGBoost
+
+### Final Selected Model
+✅ XGBoost was selected as the best-performing model due to:
+
+- High predictive accuracy
+- Better spatial generalization
+- Strong robustness on unseen regions
+- Better handling of nonlinear wildfire patterns
 
 ### Features Used
 - Brightness
 - FRP (Fire Radiative Power)
 - Confidence
+- Bright T31
 - Scan & Track
-- Satellite Source
 - Day/Night Information
+- Satellite Source
 - Geographic Coordinates
 
-### Model
-The deployed model is **XGBoost**, selected as the best-performing model after comparing:
-- SVM
-- Random Forest
-- XGBoost
-
-### Authors
-Developed for wildfire risk analysis and spatial prediction research.
+### Application
+This system can assist in:
+- Wildfire monitoring
+- Risk assessment
+- Environmental analysis
+- Spatial wildfire prediction
 """)
