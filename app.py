@@ -46,25 +46,14 @@ ENCODER_PATH = os.path.join(
 @st.cache_resource
 def load_model():
 
-    loaded_obj = joblib.load(MODEL_PATH)
+    loaded_obj = joblib.load(
+        "models/wildfire_xgboost_pipeline.joblib"
+    )
 
-    st.write(type(loaded_obj))
+    model = loaded_obj['pipeline']
+    le = loaded_obj['label_encoder']
 
-    # If saved as dictionary
-    if isinstance(loaded_obj, dict):
-
-        st.write("Keys inside model file:", loaded_obj.keys())
-
-        model = loaded_obj['model']
-        label_encoder = loaded_obj['encoder']
-
-    else:
-        model = loaded_obj
-        label_encoder = joblib.load(ENCODER_PATH)
-
-    return model, label_encoder
-
-model, le = load_model()
+    return model, le
 
 # =========================================================
 # TITLE
