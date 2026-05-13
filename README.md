@@ -178,9 +178,9 @@ wildfire-risk-classification/
 ## 👥 Contributors
 
 
-Anagha Jayarajan
-Lekshmi Priya
-Akshay BS
+|Anagha Jayarajan|
+|Lekshmi Priya|
+|Akshay BS|
 
 ---
 
