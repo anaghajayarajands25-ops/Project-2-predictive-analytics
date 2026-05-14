@@ -6,7 +6,7 @@
 
 ## 🌐 Live Demo
 
-https://wildlife-risk-classification-hmhgxew5ym8wycpsdoegi8.streamlit.app/
+https://wildfire-risk-classification-l3yfqjncpqus3ny46j9pai.streamlit.app/
 
 
 
